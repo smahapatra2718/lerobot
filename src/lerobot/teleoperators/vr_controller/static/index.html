@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeRobot VR Teleop</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #1a1a2e;
+            color: #eee;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        #status {
+            font-size: 1rem;
+            color: #aaa;
+            margin-bottom: 2rem;
+            text-align: center;
+            max-width: 80%;
+        }
+        #enter-vr {
+            padding: 1rem 3rem;
+            font-size: 1.4rem;
+            border: none;
+            border-radius: 8px;
+            background: #e94560;
+            color: #fff;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        #enter-vr:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        #enter-vr:hover:not(:disabled) { opacity: 0.85; }
+        canvas { display: none; }
+    </style>
+</head>
+<body>
+    <h1>LeRobot VR Teleop</h1>
+    <p id="status">Connecting...</p>
+    <button id="enter-vr" disabled>Enter VR</button>
+    <canvas id="gl-canvas"></canvas>
+    <script src="vr_client.js"></script>
+</body>
+</html>

@@ -97,6 +97,7 @@ from lerobot.teleoperators import (  # noqa: F401
     reachy2_teleoperator,
     so_leader,
     unitree_g1,
+    vr_controller,
 )
 from lerobot.utils.import_utils import register_third_party_plugins
 from lerobot.utils.robot_utils import precise_sleep
