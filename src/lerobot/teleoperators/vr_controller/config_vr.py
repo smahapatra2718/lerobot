@@ -26,7 +26,7 @@ class VRControllerConfig(TeleoperatorConfig):
     port: int = 8443
     ssl_cert_path: str | None = None
     ssl_key_path: str | None = None
-    camera_names: list[str] = field(default_factory=lambda: ["left_wrist", "right_wrist", "exo"])
+    camera_names: list[str] = field(default_factory=lambda: ["left_wrist", "right_wrist", "left_exo"])
     video_width: int = 640
     video_height: int = 480
     video_fps: int = 30

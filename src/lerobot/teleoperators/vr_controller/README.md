@@ -11,7 +11,8 @@ Quest Pro Browser (WebXR)              Python Server
 │                        │  WebRTC    │                       │
 │  ← 3 video tracks ←───│◄───────────│  CameraVideoTrack x3  │
 │  → data channel ──────►│───────────►│  (left_wrist,         │
-│    (controller poses)  │            │   right_wrist, exo)   │
+│    (controller poses)  │            │   right_wrist,        │
+│                        │            │   left_exo)           │
 │                        │            │                       │
 │  WebSocket signaling   │◄──────────►│  SDP/ICE exchange     │
 └────────────────────────┘            └──────────────────────┘
@@ -39,11 +40,15 @@ lerobot-teleoperate \
   --robot.type=bi_so_follower \
   --robot.left_arm_config.port=/dev/ttyUSB0 \
   --robot.right_arm_config.port=/dev/ttyUSB1 \
-  --robot.left_arm_config.cameras='{ wrist: {type: opencv, index_or_path: 0, width: 640, height: 480, fps: 30} }' \
-  --robot.right_arm_config.cameras='{ wrist: {type: opencv, index_or_path: 1, width: 640, height: 480, fps: 30} }' \
+  --robot.left_arm_config.cameras='{
+    wrist: {type: opencv, index_or_path: 0, width: 640, height: 480, fps: 30},
+    exo: {type: opencv, index_or_path: 2, width: 640, height: 480, fps: 30},
+  }' \
+  --robot.right_arm_config.cameras='{
+    wrist: {type: opencv, index_or_path: 1, width: 640, height: 480, fps: 30},
+  }' \
   --teleop.type=vr_controller \
-  --teleop.port=8443 \
-  --teleop.camera_names='[left_wrist, right_wrist, exo]'
+  --teleop.port=8443
 ```
 
 The server prints a URL like:
@@ -118,11 +123,29 @@ All options are set via `--teleop.*` flags:
 | `port` | `8443` | HTTPS port |
 | `ssl_cert_path` | auto-generated | Path to custom SSL certificate |
 | `ssl_key_path` | auto-generated | Path to custom SSL private key |
-| `camera_names` | `[left_wrist, right_wrist, exo]` | Camera names to stream to headset |
+| `camera_names` | `[left_wrist, right_wrist, left_exo]` | Camera names to stream to headset (see note below) |
 | `video_width` | `640` | Video stream width in pixels |
 | `video_height` | `480` | Video stream height in pixels |
 | `video_fps` | `30` | Video stream frame rate |
 | `position_scale` | `1.0` | Multiplier for hand movement magnitude |
+
+### Camera Names
+
+`bi_so_follower` does not have a top-level camera config — all cameras are defined per-arm and automatically prefixed with `left_` or `right_`. For example, a camera named `exo` under `left_arm_config.cameras` becomes `left_exo` in the robot's camera dict. The `camera_names` list in the VR config must match these prefixed names.
+
+| Robot Config | Resulting Name |
+|---|---|
+| `left_arm_config.cameras.wrist` | `left_wrist` |
+| `right_arm_config.cameras.wrist` | `right_wrist` |
+| `left_arm_config.cameras.exo` | `left_exo` |
+
+If you only have two cameras, override the default:
+
+```bash
+--teleop.camera_names='[left_wrist, right_wrist]'
+```
+
+Any camera name in the list that doesn't have a matching device will show a black frame in the headset.
 
 ## Controller Mapping
 
@@ -152,10 +175,10 @@ WebXR uses a Y-up, -Z-forward coordinate system. The processor maps this to the 
 Three camera feeds are rendered as floating panels in VR space:
 
 ```
-            ┌─────────┐
-            │   exo   │    ← top-center, overhead view
-            │ (0,2,-1.5) │
-            └─────────┘
+           ┌──────────┐
+           │ left_exo │    ← top-center, overhead view
+           │(0,2,-1.5)│
+           └──────────┘
 
   ┌─────────┐           ┌─────────┐
   │  left   │           │  right  │
